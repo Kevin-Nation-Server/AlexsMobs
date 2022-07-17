@@ -19,6 +19,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 public class ItemTarantulaHawkElytra extends ArmorItem {
 
@@ -59,6 +60,15 @@ public class ItemTarantulaHawkElytra extends ArmorItem {
             stack.hurtAndBreak(1, entity, e -> e.broadcastBreakEvent(net.minecraft.world.entity.EquipmentSlot.CHEST));
         }
         return true;
+    }
+
+    @Override
+    public <T extends LivingEntity> int damageItem(ItemStack stack, int amount, T entity, Consumer<T> onBroken) {
+        // Only allow taking damage if that would not result in destroying the item
+        if (stack.getDamageValue() + amount < stack.getMaxDamage()) {
+            return super.damageItem(stack, amount, entity, onBroken);
+        }
+        return 0;
     }
 
     public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair) {
